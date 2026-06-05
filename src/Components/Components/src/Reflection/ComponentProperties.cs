@@ -145,6 +145,21 @@ internal static class ComponentProperties
                     }
                     else
                     {
+                        // Check if this looks like a missing event callback for two-way binding.
+                        // When using @bind-Prop1, the compiler generates a corresponding Prop1Changed parameter.
+                        // If the component has CaptureUnmatchedValues but is missing the event callback,
+                        // we should still throw an error rather than silently capturing it.
+                        if (parameterName.EndsWith("Changed", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // This parameter name ends with "Changed", which is the pattern for
+                            // two-way binding event callbacks. Throw an error since there's no
+                            // matching property writer and we have CaptureUnmatchedValues.
+                            #pragma warning disable IL2072 // 'targetType' argument does not satisfy 'DynamicallyAccessedMemberTypes.All' in call to 'ThrowForUnknownIncomingParameterName'.
+                            ThrowForUnknownIncomingParameterName(targetType, parameterName);
+                            #pragma warning restore IL2072
+                            throw null; // Unreachable
+                        }
+
                         unmatched ??= new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                         unmatched[parameterName] = parameter.Value;
                     }
