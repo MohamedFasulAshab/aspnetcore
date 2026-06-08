@@ -150,21 +150,36 @@ internal static class ComponentProperties
                     }
                     else
                     {
-                        // Check if this looks like a missing event callback for two-way binding.
+                        // Check if this appears to be a missing event callback for two-way binding.
                         // When using @bind-Prop1, the compiler generates a corresponding Prop1Changed parameter.
                         // If the component has CaptureUnmatchedValues but is missing the event callback,
-                        // we should still throw an error rather than silently capturing it.
+                        // we should throw an error rather than silently capture it.
+                        //
+                        // We use a more precise check: only treat as a binding scenario if a corresponding
+                        // base property exists. This avoids false positives on properties that happen to
+                        // end with "Changed" but aren't part of two-way binding (e.g., IsChanged, UserChanged).
                         if (parameterName.EndsWith(TwoWayBindingChangedSuffix, StringComparison.OrdinalIgnoreCase))
                         {
-                            // This parameter name ends with the two-way binding suffix, which is the pattern for
-                            // event callbacks. Throw an error since there's no matching property writer and we have
-                            // CaptureUnmatchedValues.
-                            #pragma warning disable IL2072 // 'targetType' argument does not satisfy 'DynamicallyAccessedMemberTypes.All' in call to 'ThrowForUnknownIncomingParameterName'.
-                            ThrowForUnknownIncomingParameterName(targetType, parameterName);
-                            #pragma warning restore IL2072
-                            throw null; // Unreachable
+                            // Extract the base property name (e.g., "ValueChanged" -> "Value")
+                            var basePropertyName = parameterName.Substring(
+                                0,
+                                parameterName.Length - TwoWayBindingChangedSuffix.Length);
+
+                            // Only throw if a corresponding base property exists that would make this
+                            // a valid two-way binding pattern. If no such property exists, this is
+                            // likely a regular property ending with "Changed" and should be captured.
+                            if (writers.TryGetValue(basePropertyName, out _))
+                            {
+                                // This is a valid bind pattern (Prop1Changed where Prop1 is a parameter)
+                                // but missing the EventCallback - throw to prevent silent capture.
+                                #pragma warning disable IL2072 // 'targetType' argument does not satisfy 'DynamicallyAccessedMemberTypes.All' in call to 'ThrowForUnknownIncomingParameterName'.
+                                ThrowForUnknownIncomingParameterName(targetType, parameterName);
+                                #pragma warning restore IL2072
+                                throw null; // Unreachable
+                            }
                         }
 
+                        // Not a binding-related parameter, add to unmatched collection
                         unmatched ??= new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                         unmatched[parameterName] = parameter.Value;
                     }
