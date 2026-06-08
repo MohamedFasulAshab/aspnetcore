@@ -22,6 +22,11 @@ internal static class ComponentProperties
 
     internal const BindingFlags BindablePropertyFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.IgnoreCase;
 
+    // The suffix used by the Razor compiler for two-way binding event callbacks.
+    // When you write @bind-Value, the compiler generates: Value parameter + ValueChanged callback parameter.
+    // This constant is used to detect missing event callbacks when CaptureUnmatchedValues is present.
+    private const string TwoWayBindingChangedSuffix = "Changed";
+
     // Right now it's not possible for a component to define a Parameter and a Cascading Parameter with
     // the same name. We don't give you a way to express this in code (would create duplicate properties),
     // and we don't have the ability to represent it in our data structures.
@@ -149,11 +154,11 @@ internal static class ComponentProperties
                         // When using @bind-Prop1, the compiler generates a corresponding Prop1Changed parameter.
                         // If the component has CaptureUnmatchedValues but is missing the event callback,
                         // we should still throw an error rather than silently capturing it.
-                        if (parameterName.EndsWith("Changed", StringComparison.OrdinalIgnoreCase))
+                        if (parameterName.EndsWith(TwoWayBindingChangedSuffix, StringComparison.OrdinalIgnoreCase))
                         {
-                            // This parameter name ends with "Changed", which is the pattern for
-                            // two-way binding event callbacks. Throw an error since there's no
-                            // matching property writer and we have CaptureUnmatchedValues.
+                            // This parameter name ends with the two-way binding suffix, which is the pattern for
+                            // event callbacks. Throw an error since there's no matching property writer and we have
+                            // CaptureUnmatchedValues.
                             #pragma warning disable IL2072 // 'targetType' argument does not satisfy 'DynamicallyAccessedMemberTypes.All' in call to 'ThrowForUnknownIncomingParameterName'.
                             ThrowForUnknownIncomingParameterName(targetType, parameterName);
                             #pragma warning restore IL2072
