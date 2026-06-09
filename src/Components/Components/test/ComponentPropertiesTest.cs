@@ -309,34 +309,84 @@ public class ComponentPropertiesTest
     #region Bug #19638: Mixed Binding and Non-Binding Scenarios
 
     /// <summary>
-    /// Verifies component with mix of binding and non-binding changed parameters.
+    /// CRITICAL: When a parameter ends with "Changed" but NO corresponding base property exists,
+    /// it should be captured as an attribute, NOT thrown. This is the key precision improvement.
+    /// ComponentWithNonBindingChangedProperty has IsChanged and UserChanged, but NO Prop1.
+    /// Passing Prop1Changed should be captured since Prop1 doesn't exist.
     /// </summary>
     [Fact]
-    public void SetProperties_MixedBindingAndNonBindingChangedParameters()
+    public void SetProperties_CapturesChangedSuffix_WhenBasePropertyDoesNotExist()
     {
-        // Arrange - Component with IsChanged property (not binding pattern) and Prop1
+        // Arrange - ComponentWithNonBindingChangedProperty has: IsChanged, UserChanged (NO Prop1)
         var renderer = new TestRenderer();
         var component = new ComponentWithNonBindingChangedProperty();
         var componentId = renderer.AssignRootComponentId(component);
         renderer.RenderRootComponent(componentId);
 
-        // Act - Pass IsChanged (non-binding) and Prop1Changed (binding, missing)
-        var ex = Assert.Throws<InvalidOperationException>(
-            () => component.SetParameters(ParameterView.FromDictionary(new Dictionary<string, object>
-            {
-                ["IsChanged"] = true,
-                ["Prop1Changed"] = EventCallback.Empty
-            })));
+        // Act - Prop1Changed should be captured since Prop1 doesn't exist as a parameter
+        component.SetParameters(ParameterView.FromDictionary(new Dictionary<string, object>
+        {
+            ["Prop1Changed"] = EventCallback.Empty
+        }));
 
-        // Assert - Should throw because Prop1Changed exists but Prop1 doesn't (no base property)
-        // Actually Prop1 exists in this component... let me reconsider
-        // Wait - Prop1Changed with no Prop1 base should still throw since binding isn't valid here
-        Assert.Contains("Prop1Changed", ex.Message);
+        // Assert - Should be captured in ExtraAttributes (not thrown)
+        Assert.True(component.ExtraAttributes.ContainsKey("Prop1Changed"));
+        Assert.Equal(EventCallback.Empty, component.ExtraAttributes["Prop1Changed"]);
+    }
+
+    /// <summary>
+    /// Verifies that when a component has a valid binding pair (Prop1 + Prop1 with CaptureUnmatchedValues),
+    /// and the callback is properly provided, the binding works correctly.
+    /// </summary>
+    [Fact]
+    public void SetProperties_Succeeds_WhenBindingPairAndCallbackBothExist()
+    {
+        // Arrange
+        var renderer = new TestRenderer();
+        var component = new ComponentWithBindingPairWithCallback();
+        var componentId = renderer.AssignRootComponentId(component);
+        renderer.RenderRootComponent(componentId);
+
+        // Act - Both Prop1 and Prop1Changed are present, should succeed
+        component.SetParameters(ParameterView.FromDictionary(new Dictionary<string, object>
+        {
+            ["Prop1"] = true,
+            ["Prop1Changed"] = EventCallback.Empty
+        }));
+
+        // Assert - Should not throw, parameters set correctly
+        Assert.True(component.Prop1);
+        Assert.NotNull(component.Prop1Changed);
     }
 
     #endregion
 
     #region Bug #19638: Edge Cases - Empty and Null Values
+
+    /// <summary>
+    /// Edge case: Verifies that a parameter named exactly "Changed" (which would result in
+    /// an empty base property name) is captured, not thrown. The substring operation
+    /// would produce an empty string for basePropertyName, which won't match any parameter.
+    /// </summary>
+    [Fact]
+    public void SetProperties_CapturesParameterNamedExactlyChanged()
+    {
+        // Arrange
+        var renderer = new TestRenderer();
+        var component = new ComponentWithCaptureUnmatchedValues();
+        var componentId = renderer.AssignRootComponentId(component);
+        renderer.RenderRootComponent(componentId);
+
+        // Act - "Changed" parameter results in empty basePropertyName
+        component.SetParameters(ParameterView.FromDictionary(new Dictionary<string, object>
+        {
+            ["Changed"] = "some value"
+        }));
+
+        // Assert - Should be captured (empty base property name won't match any parameter)
+        Assert.True(component.ExtraAttributes.ContainsKey("Changed"));
+        Assert.Equal("some value", component.ExtraAttributes["Changed"]);
+    }
 
     /// <summary>
     /// Verifies empty string as value is captured correctly.
@@ -518,6 +568,47 @@ public class ComponentPropertiesTest
         public string Prop2 { get; set; } = string.Empty;
 
         // Intentional: Missing all *Changed event callbacks
+
+        private RenderHandle _renderHandle;
+
+        public void Attach(RenderHandle renderHandle)
+        {
+            _renderHandle = renderHandle;
+        }
+
+        public Task SetParametersAsync(ParameterView parameters)
+        {
+            parameters.SetParameterProperties(this);
+            _renderHandle.Render(builder => { });
+            return Task.CompletedTask;
+        }
+
+        public void SetParameters(ParameterView parameters)
+        {
+            parameters.SetParameterProperties(this);
+        }
+    }
+
+    /// <summary>
+    /// Test component with CaptureUnmatchedValues and a complete binding pair
+    /// (Prop1 plus Prop1Changed). Used to verify binding succeeds when both exist.
+    /// </summary>
+    private class ComponentWithBindingPairWithCallback : IComponent
+    {
+        public Dictionary<string, object> ExtraAttributes { get; set; } = new();
+
+        [Parameter(CaptureUnmatchedValues = true)]
+        public Dictionary<string, object> Attributes
+        {
+            get => ExtraAttributes;
+            set => ExtraAttributes = value;
+        }
+
+        [Parameter]
+        public bool Prop1 { get; set; }
+
+        [Parameter]
+        public EventCallback<bool> Prop1Changed { get; set; }
 
         private RenderHandle _renderHandle;
 
