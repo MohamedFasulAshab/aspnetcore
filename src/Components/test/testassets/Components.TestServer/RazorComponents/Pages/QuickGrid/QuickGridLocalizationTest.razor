@@ -1,0 +1,108 @@
+@page "/quickgrid-localization"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Components.Forms
+
+<h3>QuickGrid Pagination Localization Test</h3>
+
+<div id="localized-paginator">
+    <QuickGrid Items="@people" Pagination="@pagination">
+        <PropertyColumn Property="@(p => p.PersonId)" Sortable="true" />
+        <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
+        <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />
+    </QuickGrid>
+</div>
+
+@* Test Case 1: German localization *@
+<div class="german-paginator">
+    <Paginator State="@pagination" 
+        FirstPageAriaLabel="Zur ersten Seite"
+        PreviousPageAriaLabel="Vorherige Seite"
+        NextPageAriaLabel="Nächste Seite"
+        LastPageAriaLabel="Zur letzten Seite"
+        FirstPageTitle="Zur ersten Seite"
+        PreviousPageTitle="Vorherige Seite"
+        NextPageTitle="Nächste Seite"
+        LastPageTitle="Zur letzten Seite"
+        ItemSingularText="Element"
+        ItemPluralText="Elemente"
+        PageLabelFormat="Seite {0} von {1}" />
+</div>
+
+@* Test Case 2: Spanish localization *@
+<div class="spanish-paginator">
+    <Paginator State="@paginationSpanish"
+        FirstPageAriaLabel="Ir a la primera página"
+        PreviousPageAriaLabel="Página anterior"
+        NextPageAriaLabel="Página siguiente"
+        LastPageAriaLabel="Ir a la última página"
+        FirstPageTitle="Ir a la primera página"
+        PreviousPageTitle="Página anterior"
+        NextPageTitle="Página siguiente"
+        LastPageTitle="Ir a la última página"
+        ItemSingularText="artículo"
+        ItemPluralText="artículos"
+        PageLabelFormat="Página {0} de {1}" />
+</div>
+
+@* Test Case 3: Default English (backward compatibility check) *@
+<div class="default-english-paginator">
+    <QuickGrid Items="@people" Pagination="@paginationEnglish" />
+    <Paginator State="@paginationEnglish" />
+</div>
+
+@* Test Case 4: Custom page label format *@
+<div class="custom-format-paginator">
+    <Paginator State="@paginationCustom"
+        PageLabelFormat="[{0}/{1}]"
+        ItemSingularText="entry"
+        ItemPluralText="entries" />
+</div>
+
+@* Test Case 5: Empty strings test *@
+<div class="empty-strings-paginator">
+    <Paginator State="@paginationEmpty"
+        FirstPageAriaLabel=""
+        PreviousPageAriaLabel=""
+        NextPageAriaLabel=""
+        LastPageAriaLabel=""
+        FirstPageTitle=""
+        PreviousPageTitle=""
+        NextPageTitle=""
+        LastPageTitle=""
+        ItemSingularText=""
+        ItemPluralText=""
+        PageLabelFormat="" />
+</div>
+
+@* Test Case 6: Using SummaryTemplate takes precedence *@
+<div class="summary-template-paginator">
+    <Paginator State="@paginationCustom">
+        <SummaryTemplate>
+            <span class="custom-summary">Custom pagination template</span>
+        </SummaryTemplate>
+    </Paginator>
+</div>
+
+@code {
+    record Person(int PersonId, string FirstName, string LastName);
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    PaginationState paginationSpanish = new PaginationState { ItemsPerPage = 10 };
+    PaginationState paginationEnglish = new PaginationState { ItemsPerPage = 10 };
+    PaginationState paginationCustom = new PaginationState { ItemsPerPage = 10 };
+    PaginationState paginationEmpty = new PaginationState { ItemsPerPage = 10 };
+
+    IQueryable<Person> people = new[]
+    {
+        new Person(1, "Julie", "Smith"),
+        new Person(2, "Nur", "Sari"),
+        new Person(3, "Jose", "Hernandez"),
+        new Person(4, "Jean", "Martin"),
+        new Person(5, "António", "Langa"),
+        new Person(6, "Kenji", "Sato"),
+        new Person(7, "Sven", "Ottlieb"),
+        new Person(8, "Liu", "Wang"),
+        new Person(9, "Giovanni", "Rovelli"),
+        new Person(10, "Eduardo", "Martins"),
+    }.AsQueryable();
+}

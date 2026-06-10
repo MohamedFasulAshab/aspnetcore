@@ -28,6 +28,73 @@ public partial class Paginator : IDisposable
     [Parameter] public RenderFragment? SummaryTemplate { get; set; }
 
     /// <summary>
+    /// Gets or sets the aria-label text for the first page button.
+    /// Defaults to "Go to first page".
+    /// </summary>
+    [Parameter] public string FirstPageAriaLabel { get; set; } = "Go to first page";
+
+    /// <summary>
+    /// Gets or sets the aria-label text for the previous page button.
+    /// Defaults to "Go to previous page".
+    /// </summary>
+    [Parameter] public string PreviousPageAriaLabel { get; set; } = "Go to previous page";
+
+    /// <summary>
+    /// Gets or sets the aria-label text for the next page button.
+    /// Defaults to "Go to next page".
+    /// </summary>
+    [Parameter] public string NextPageAriaLabel { get; set; } = "Go to next page";
+
+    /// <summary>
+    /// Gets or sets the aria-label text for the last page button.
+    /// Defaults to "Go to last page".
+    /// </summary>
+    [Parameter] public string LastPageAriaLabel { get; set; } = "Go to last page";
+
+    /// <summary>
+    /// Gets or sets the title/tooltip text for the first page button.
+    /// Defaults to "Go to first page".
+    /// </summary>
+    [Parameter] public string FirstPageTitle { get; set; } = "Go to first page";
+
+    /// <summary>
+    /// Gets or sets the title/tooltip text for the previous page button.
+    /// Defaults to "Go to previous page".
+    /// </summary>
+    [Parameter] public string PreviousPageTitle { get; set; } = "Go to previous page";
+
+    /// <summary>
+    /// Gets or sets the title/tooltip text for the next page button.
+    /// Defaults to "Go to next page".
+    /// </summary>
+    [Parameter] public string NextPageTitle { get; set; } = "Go to next page";
+
+    /// <summary>
+    /// Gets or sets the title/tooltip text for the last page button.
+    /// Defaults to "Go to last page".
+    /// </summary>
+    [Parameter] public string LastPageTitle { get; set; } = "Go to last page";
+
+    /// <summary>
+    /// Gets or sets the singular form text for items (used when item count is 1).
+    /// Defaults to "item".
+    /// </summary>
+    [Parameter] public string ItemSingularText { get; set; } = "item";
+
+    /// <summary>
+    /// Gets or sets the plural form text for items (used when item count is not 1).
+    /// Defaults to "items".
+    /// </summary>
+    [Parameter] public string ItemPluralText { get; set; } = "items";
+
+    /// <summary>
+    /// Gets or sets the format string for the page summary display.
+    /// The format accepts {0} for current page and {1} for total pages.
+    /// Defaults to "Page {0} of {1}".
+    /// </summary>
+    [Parameter] public string PageLabelFormat { get; set; } = "Page {0} of {1}";
+
+    /// <summary>
     /// Constructs an instance of <see cref="Paginator" />.
     /// </summary>
     public Paginator()

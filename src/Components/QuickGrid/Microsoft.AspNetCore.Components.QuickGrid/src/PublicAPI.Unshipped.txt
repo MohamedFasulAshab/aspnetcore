@@ -1,4 +1,26 @@
 #nullable enable
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.FirstPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.FirstPageAriaLabel.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.FirstPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.FirstPageTitle.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.ItemPluralText.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.ItemPluralText.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.ItemSingularText.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.ItemSingularText.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.LastPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.LastPageAriaLabel.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.LastPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.LastPageTitle.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.NextPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.NextPageAriaLabel.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.NextPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.NextPageTitle.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.PageLabelFormat.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.PageLabelFormat.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.PreviousPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.PreviousPageAriaLabel.set -> void
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.PreviousPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Paginator.PreviousPageTitle.set -> void
 Microsoft.AspNetCore.Components.QuickGrid.QuickGrid<TGridItem>.QueryParameterNamePrefix.get -> string!
 Microsoft.AspNetCore.Components.QuickGrid.QuickGrid<TGridItem>.QueryParameterNamePrefix.set -> void
 Microsoft.AspNetCore.Components.QuickGrid.QuickGrid<TGridItem>.OnRowClick.get -> Microsoft.AspNetCore.Components.EventCallback<TGridItem>
