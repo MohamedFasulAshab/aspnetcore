@@ -15,6 +15,10 @@ public partial class Paginator : IDisposable
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private IPaginatorLocalizer? PaginatorLocalizer { get; set; }
+
     private string QueryName => State.QueryName;
 
     /// <summary>
@@ -28,71 +32,138 @@ public partial class Paginator : IDisposable
     [Parameter] public RenderFragment? SummaryTemplate { get; set; }
 
     /// <summary>
-    /// Gets or sets the aria-label text for the first page button.
-    /// Defaults to "Go to first page".
+    /// Optionally supplies a custom localizer for pagination text localization.
+    /// When set, this takes precedence over any injected <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string FirstPageAriaLabel { get; set; } = "Go to first page";
+    [Parameter] public IPaginatorLocalizer? Localizer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the aria-label text for the first page button.
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
+    /// </summary>
+    [Parameter] public string? FirstPageAriaLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the aria-label text for the previous page button.
-    /// Defaults to "Go to previous page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string PreviousPageAriaLabel { get; set; } = "Go to previous page";
+    [Parameter] public string? PreviousPageAriaLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the aria-label text for the next page button.
-    /// Defaults to "Go to next page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string NextPageAriaLabel { get; set; } = "Go to next page";
+    [Parameter] public string? NextPageAriaLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the aria-label text for the last page button.
-    /// Defaults to "Go to last page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string LastPageAriaLabel { get; set; } = "Go to last page";
+    [Parameter] public string? LastPageAriaLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the title/tooltip text for the first page button.
-    /// Defaults to "Go to first page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string FirstPageTitle { get; set; } = "Go to first page";
+    [Parameter] public string? FirstPageTitle { get; set; }
 
     /// <summary>
     /// Gets or sets the title/tooltip text for the previous page button.
-    /// Defaults to "Go to previous page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string PreviousPageTitle { get; set; } = "Go to previous page";
+    [Parameter] public string? PreviousPageTitle { get; set; }
 
     /// <summary>
     /// Gets or sets the title/tooltip text for the next page button.
-    /// Defaults to "Go to next page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string NextPageTitle { get; set; } = "Go to next page";
+    [Parameter] public string? NextPageTitle { get; set; }
 
     /// <summary>
     /// Gets or sets the title/tooltip text for the last page button.
-    /// Defaults to "Go to last page".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string LastPageTitle { get; set; } = "Go to last page";
+    [Parameter] public string? LastPageTitle { get; set; }
 
     /// <summary>
     /// Gets or sets the singular form text for items (used when item count is 1).
-    /// Defaults to "item".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string ItemSingularText { get; set; } = "item";
+    [Parameter] public string? ItemSingularText { get; set; }
 
     /// <summary>
     /// Gets or sets the plural form text for items (used when item count is not 1).
-    /// Defaults to "items".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string ItemPluralText { get; set; } = "items";
+    [Parameter] public string? ItemPluralText { get; set; }
 
     /// <summary>
     /// Gets or sets the format string for the page summary display.
     /// The format accepts {0} for current page and {1} for total pages.
-    /// Defaults to "Page {0} of {1}".
+    /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
-    [Parameter] public string PageLabelFormat { get; set; } = "Page {0} of {1}";
+    [Parameter] public string? PageLabelFormat { get; set; }
+
+    /// <summary>
+    /// Gets the effective localizer to use for localization.
+    /// Priority: 1. Explicit <see cref="Localizer"/> parameter, 2. Injected <see cref="IPaginatorLocalizer"/>, 3. Default English.
+    /// </summary>
+    private IPaginatorLocalizer EffectiveLocalizer => Localizer ?? PaginatorLocalizer ?? DefaultPaginatorLocalizer.Instance;
+
+    /// <summary>
+    /// Gets the resolved first page aria-label text.
+    /// </summary>
+    private string ResolvedFirstPageAriaLabel => FirstPageAriaLabel ?? EffectiveLocalizer.FirstPageAriaLabel;
+
+    /// <summary>
+    /// Gets the resolved previous page aria-label text.
+    /// </summary>
+    private string ResolvedPreviousPageAriaLabel => PreviousPageAriaLabel ?? EffectiveLocalizer.PreviousPageAriaLabel;
+
+    /// <summary>
+    /// Gets the resolved next page aria-label text.
+    /// </summary>
+    private string ResolvedNextPageAriaLabel => NextPageAriaLabel ?? EffectiveLocalizer.NextPageAriaLabel;
+
+    /// <summary>
+    /// Gets the resolved last page aria-label text.
+    /// </summary>
+    private string ResolvedLastPageAriaLabel => LastPageAriaLabel ?? EffectiveLocalizer.LastPageAriaLabel;
+
+    /// <summary>
+    /// Gets the resolved first page title text.
+    /// </summary>
+    private string ResolvedFirstPageTitle => FirstPageTitle ?? EffectiveLocalizer.FirstPageTitle;
+
+    /// <summary>
+    /// Gets the resolved previous page title text.
+    /// </summary>
+    private string ResolvedPreviousPageTitle => PreviousPageTitle ?? EffectiveLocalizer.PreviousPageTitle;
+
+    /// <summary>
+    /// Gets the resolved next page title text.
+    /// </summary>
+    private string ResolvedNextPageTitle => NextPageTitle ?? EffectiveLocalizer.NextPageTitle;
+
+    /// <summary>
+    /// Gets the resolved last page title text.
+    /// </summary>
+    private string ResolvedLastPageTitle => LastPageTitle ?? EffectiveLocalizer.LastPageTitle;
+
+    /// <summary>
+    /// Gets the resolved singular item text.
+    /// </summary>
+    private string ResolvedItemSingularText => ItemSingularText ?? EffectiveLocalizer.ItemSingularText;
+
+    /// <summary>
+    /// Gets the resolved plural item text.
+    /// </summary>
+    private string ResolvedItemPluralText => ItemPluralText ?? EffectiveLocalizer.ItemPluralText;
+
+    /// <summary>
+    /// Gets the resolved page label format string.
+    /// </summary>
+    private string ResolvedPageLabelFormat => PageLabelFormat ?? EffectiveLocalizer.PageLabelFormat;
 
     /// <summary>
     /// Constructs an instance of <see cref="Paginator" />.

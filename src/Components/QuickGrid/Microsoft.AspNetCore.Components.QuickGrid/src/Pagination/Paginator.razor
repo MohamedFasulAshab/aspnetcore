@@ -11,29 +11,29 @@
             }
             else
             {
-                <text><strong>@State.TotalItemCount</strong> @(State.TotalItemCount == 1 ? ItemSingularText : ItemPluralText)</text>
+                <text><strong>@State.TotalItemCount</strong> @(State.TotalItemCount == 1 ? ResolvedItemSingularText : ResolvedItemPluralText)</text>
             }
         </div>
         <nav role="navigation">
             @if (QuickGridFeatureFlags.EnableUrlBasedQuickGridNavigationAndSorting)
             {
-                <a class="go-first" href="@(CanGoBack ? GetPageUrl(0) : null)" title="@FirstPageTitle" aria-label="@FirstPageAriaLabel" aria-disabled="@(!CanGoBack ? "true" : "false")">Â«</a>
-                <a class="go-previous" href="@(CanGoBack ? GetPageUrl(State.CurrentPageIndex - 1) : null)" title="@PreviousPageTitle" aria-label="@PreviousPageAriaLabel" aria-disabled="@(!CanGoBack ? "true" : "false")">â€¹</a>
+                <a class="go-first" href="@(CanGoBack ? GetPageUrl(0) : null)" title="@ResolvedFirstPageTitle" aria-label="@ResolvedFirstPageAriaLabel" aria-disabled="@(!CanGoBack ? "true" : "false")">«</a>
+                <a class="go-previous" href="@(CanGoBack ? GetPageUrl(State.CurrentPageIndex - 1) : null)" title="@ResolvedPreviousPageTitle" aria-label="@ResolvedPreviousPageAriaLabel" aria-disabled="@(!CanGoBack ? "true" : "false")">‹</a>
                 <div class="pagination-text">
-                    @String.Format(PageLabelFormat, State.CurrentPageIndex + 1, State.LastPageIndex + 1)
+                    @String.Format(ResolvedPageLabelFormat, State.CurrentPageIndex + 1, State.LastPageIndex + 1)
                 </div>
-                <a class="go-next" href="@(CanGoForwards ? GetPageUrl(State.CurrentPageIndex + 1) : null)" title="@NextPageTitle" aria-label="@NextPageAriaLabel" aria-disabled="@(!CanGoForwards ? "true" : "false")">â€º</a>
-                <a class="go-last" href="@(CanGoForwards ? GetPageUrl(State.LastPageIndex.GetValueOrDefault(0)) : null)" title="@LastPageTitle" aria-label="@LastPageAriaLabel" aria-disabled="@(!CanGoForwards ? "true" : "false")">Â»</a>
+                <a class="go-next" href="@(CanGoForwards ? GetPageUrl(State.CurrentPageIndex + 1) : null)" title="@ResolvedNextPageTitle" aria-label="@ResolvedNextPageAriaLabel" aria-disabled="@(!CanGoForwards ? "true" : "false")">›</a>
+                <a class="go-last" href="@(CanGoForwards ? GetPageUrl(State.LastPageIndex.GetValueOrDefault(0)) : null)" title="@ResolvedLastPageTitle" aria-label="@ResolvedLastPageAriaLabel" aria-disabled="@(!CanGoForwards ? "true" : "false")">»</a>
             }
             else
             {
-                <button class="go-first" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="@FirstPageTitle" aria-label="@FirstPageAriaLabel"></button>
-                <button class="go-previous" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="@PreviousPageTitle" aria-label="@PreviousPageAriaLabel"></button>
+                <button class="go-first" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="@ResolvedFirstPageTitle" aria-label="@ResolvedFirstPageAriaLabel"></button>
+                <button class="go-previous" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="@ResolvedPreviousPageTitle" aria-label="@ResolvedPreviousPageAriaLabel"></button>
                 <div class="pagination-text">
-                    @String.Format(PageLabelFormat, State.CurrentPageIndex + 1, State.LastPageIndex + 1)
+                    @String.Format(ResolvedPageLabelFormat, State.CurrentPageIndex + 1, State.LastPageIndex + 1)
                 </div>
-                <button class="go-next" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="@NextPageTitle" aria-label="@NextPageAriaLabel"></button>
-                <button class="go-last" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="@LastPageTitle" aria-label="@LastPageAriaLabel"></button>
+                <button class="go-next" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="@ResolvedNextPageTitle" aria-label="@ResolvedNextPageAriaLabel"></button>
+                <button class="go-last" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="@ResolvedLastPageTitle" aria-label="@ResolvedLastPageAriaLabel"></button>
             }
         </nav>
     }
