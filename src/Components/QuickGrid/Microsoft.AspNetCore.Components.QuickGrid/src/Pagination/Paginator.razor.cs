@@ -38,6 +38,19 @@ public partial class Paginator : IDisposable
     [Parameter] public IPaginatorLocalizer? Localizer { get; set; }
 
     /// <summary>
+    /// Optionally supplies a delegate to format the page label text.
+    /// The delegate receives (currentPage, totalPages) using 1-based values.
+    /// When set, this takes precedence over any values from <see cref="IPaginatorLocalizer"/>.
+    /// </summary>
+    [Parameter] public Func<int, int, string>? PageLabelFormatter { get; set; }
+
+    /// <summary>
+    /// Optionally supplies a delegate to format the summary text.
+    /// When set, this takes precedence over any values from <see cref="IPaginatorLocalizer"/>.
+    /// </summary>
+    [Parameter] public Func<PaginationState, string>? SummaryFormatter { get; set; }
+
+    /// <summary>
     /// Gets or sets the aria-label text for the first page button.
     /// Overrides the value from <see cref="IPaginatorLocalizer"/>.
     /// </summary>
@@ -164,6 +177,65 @@ public partial class Paginator : IDisposable
     /// Gets the resolved page label format string.
     /// </summary>
     private string ResolvedPageLabelFormat => PageLabelFormat ?? EffectiveLocalizer.PageLabelFormat;
+
+    /// <summary>
+    /// Gets the resolved items text (handles pluralization via advanced localizers when available).
+    /// </summary>
+    private string ResolvedItemsText
+    {
+        get
+        {
+            var count = State.TotalItemCount ?? 0;
+            if (EffectiveLocalizer is Infrastructure.IPaginatorLocalizer2 advanced)
+            {
+                return advanced.Items(count);
+            }
+
+            return count == 1 ? ResolvedItemSingularText : ResolvedItemPluralText;
+        }
+    }
+
+    /// <summary>
+    /// Gets the resolved page label text.
+    /// </summary>
+    private string ResolvedPageLabelText
+    {
+        get
+        {
+            var current = State.CurrentPageIndex + 1;
+            var total = (State.LastPageIndex ?? 0) + 1;
+            if (PageLabelFormatter is not null)
+            {
+                return PageLabelFormatter(current, total);
+            }
+            if (EffectiveLocalizer is Infrastructure.IPaginatorLocalizer2 advanced)
+            {
+                return advanced.PageLabel(current, total);
+            }
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture, ResolvedPageLabelFormat, current, total);
+        }
+    }
+
+    /// <summary>
+    /// Gets the resolved summary text.
+    /// </summary>
+    private string ResolvedSummaryText
+    {
+        get
+        {
+            if (SummaryFormatter is not null)
+            {
+                return SummaryFormatter(State);
+            }
+            if (EffectiveLocalizer is Infrastructure.IPaginatorLocalizer2 advanced)
+            {
+                return advanced.Summary(State);
+            }
+
+            // Default summary: "<count> <items>"
+            return $"{State.TotalItemCount} {ResolvedItemsText}";
+        }
+    }
 
     /// <summary>
     /// Constructs an instance of <see cref="Paginator" />.

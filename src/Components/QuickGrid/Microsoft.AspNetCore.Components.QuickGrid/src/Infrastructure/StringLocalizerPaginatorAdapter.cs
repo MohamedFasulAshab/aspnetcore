@@ -5,6 +5,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable CS8601 // Possible null reference assignment
+
 namespace Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 
 /// <summary>
@@ -22,9 +24,9 @@ namespace Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 /// </code>
 /// </para>
 /// </remarks>
-public class StringLocalizerPaginatorAdapter : IPaginatorLocalizer
+public class StringLocalizerPaginatorAdapter : IPaginatorLocalizer, IPaginatorLocalizer2
 {
-    private readonly IStringLocalizer _localizer;
+    private readonly IStringLocalizer _localizer = default!;
 
     /// <summary>
     /// Resource base name used for looking up QuickGrid pagination localization strings.
@@ -72,6 +74,75 @@ public class StringLocalizerPaginatorAdapter : IPaginatorLocalizer
 
     /// <inheritdoc />
     public string PageLabelFormat => _localizer[nameof(PageLabelFormat)];
+
+    /// <inheritdoc />
+    public string Items(int count)
+    {
+        // Try exact numeric key first: "Items_5"
+        var exact = _localizer[$"Items_{count}"];
+        if (!exact.ResourceNotFound && !string.IsNullOrEmpty(exact.Value))
+        {
+            return exact.Value;
+        }
+
+        // Try common plural category keys: One/Few/Many/Other
+        if (count == 1)
+        {
+            var one = _localizer["Items_One"];
+            if (!one.ResourceNotFound && !string.IsNullOrEmpty(one.Value))
+            {
+                return one.Value;
+            }
+        }
+        else if (count is >= 2 and <= 4)
+        {
+            var few = _localizer["Items_Few"];
+            if (!few.ResourceNotFound && !string.IsNullOrEmpty(few.Value))
+            {
+                return few.Value;
+            }
+        }
+        else if (count >= 5)
+        {
+            var many = _localizer["Items_Many"];
+            if (!many.ResourceNotFound && !string.IsNullOrEmpty(many.Value))
+            {
+                return many.Value;
+            }
+        }
+
+        var other = _localizer["Items_Other"];
+        if (!other.ResourceNotFound && !string.IsNullOrEmpty(other.Value))
+        {
+            return other.Value;
+        }
+
+        // Fallback to singular/plural properties
+        return count == 1 ? ItemSingularText : ItemPluralText;
+    }
+
+    /// <inheritdoc />
+    public string PageLabel(int currentPage, int totalPages)
+        => _localizer[nameof(PageLabel), new object[] { currentPage, totalPages }].Value
+           ?? string.Format(System.Globalization.CultureInfo.InvariantCulture, PageLabelFormat, currentPage, totalPages);
+
+    /// <inheritdoc />
+    public string Summary(Microsoft.AspNetCore.Components.QuickGrid.PaginationState state)
+    {
+        var count = state.TotalItemCount ?? 0;
+        var current = state.CurrentPageIndex + 1;
+        var total = state.LastPageIndex + 1;
+
+        // Allow localized composite summary with parameters: count, current page, total pages
+        var composite = _localizer["Summary", new object[] { count, current, total }];
+        if (!composite.ResourceNotFound && !string.IsNullOrEmpty(composite.Value))
+        {
+            return composite.Value;
+        }
+
+        // Fallback minimal summary
+        return $"{count} {(count == 1 ? ItemSingularText : ItemPluralText)}";
+    }
 }
 
 /// <summary>
@@ -115,8 +186,12 @@ public static class PaginatorLocalizerExtensions
 
         services.AddSingleton<IPaginatorLocalizer>(sp =>
         {
-            var localizer = factory.Create(typeof(StringLocalizerPaginatorAdapter));
-            return new StringLocalizerPaginatorAdapter(localizer);
+            var created = factory.Create(typeof(StringLocalizerPaginatorAdapter));
+            if (created is null)
+            {
+                throw new InvalidOperationException("IStringLocalizerFactory returned null localizer for StringLocalizerPaginatorAdapter.");
+            }
+            return new StringLocalizerPaginatorAdapter(created);
         });
         return services;
     }
@@ -136,8 +211,12 @@ public static class PaginatorLocalizerExtensions
         services.AddSingleton<IPaginatorLocalizer>(sp =>
         {
             var factory = sp.GetRequiredService<IStringLocalizerFactory>();
-            var localizer = factory.Create(typeof(T));
-            return new StringLocalizerPaginatorAdapter(localizer);
+            var created = factory.Create(typeof(T));
+            if (created is null)
+            {
+                throw new InvalidOperationException($"IStringLocalizerFactory returned null localizer for resource type {typeof(T).FullName}.");
+            }
+            return new StringLocalizerPaginatorAdapter(created);
         });
         return services;
     }
@@ -158,3 +237,5 @@ public static class PaginatorLocalizerExtensions
         return services;
     }
 }
+
+#pragma warning restore CS8601 // Possible null reference assignment
