@@ -51,6 +51,24 @@ Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.StringLocalizerPaginato
 Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.StringLocalizerPaginatorAdapter.Items(int count) -> string!
 Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.StringLocalizerPaginatorAdapter.PageLabel(int currentPage, int totalPages) -> string!
 Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.StringLocalizerPaginatorAdapter.Summary(Microsoft.AspNetCore.Components.QuickGrid.PaginationState! state) -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer
+static Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.ResourceBaseName.get -> string!
+static Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.Instance.get -> Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.ResourceManagerPaginatorLocalizer(System.Resources.ResourceManager! resourceManager) -> void
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.FirstPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.FirstPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.ItemPluralText.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.ItemSingularText.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.LastPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.LastPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.NextPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.NextPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.PageLabelFormat.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.PreviousPageAriaLabel.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.PreviousPageTitle.get -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.Items(int count) -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.PageLabel(int currentPage, int totalPages) -> string!
+Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.ResourceManagerPaginatorLocalizer.Summary(Microsoft.AspNetCore.Components.QuickGrid.PaginationState! state) -> string!
 Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.DefaultPaginatorLocalizer.Items(int count) -> string!
 Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.DefaultPaginatorLocalizer.PageLabel(int currentPage, int totalPages) -> string!
 Microsoft.AspNetCore.Components.QuickGrid.Infrastructure.DefaultPaginatorLocalizer.Summary(Microsoft.AspNetCore.Components.QuickGrid.PaginationState! state) -> string!

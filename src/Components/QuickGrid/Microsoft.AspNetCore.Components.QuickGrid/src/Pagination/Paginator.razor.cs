@@ -119,9 +119,9 @@ public partial class Paginator : IDisposable
 
     /// <summary>
     /// Gets the effective localizer to use for localization.
-    /// Priority: 1. Explicit <see cref="Localizer"/> parameter, 2. Injected <see cref="IPaginatorLocalizer"/>, 3. Default English.
+    /// Priority: 1. Explicit <see cref="Localizer"/> parameter, 2. Injected <see cref="IPaginatorLocalizer"/>, 3. Built-in culture-aware default.
     /// </summary>
-    private IPaginatorLocalizer EffectiveLocalizer => Localizer ?? PaginatorLocalizer ?? DefaultPaginatorLocalizer.Instance;
+    private IPaginatorLocalizer EffectiveLocalizer => Localizer ?? PaginatorLocalizer ?? ResourceManagerPaginatorLocalizer.Instance;
 
     /// <summary>
     /// Gets the resolved first page aria-label text.
