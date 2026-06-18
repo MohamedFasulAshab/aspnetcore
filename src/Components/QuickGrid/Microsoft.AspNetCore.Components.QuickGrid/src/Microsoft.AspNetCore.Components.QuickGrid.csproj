@@ -33,12 +33,4 @@
     <InternalsVisibleTo Include="Microsoft.AspNetCore.Components.QuickGrid.Tests" />
   </ItemGroup>
 
-  <!-- Exclude satellite culture .resx files from compilation - they should only become satellite assemblies -->
-  <ItemGroup>
-    <EmbeddedResource Remove="Resources\Paginator.es.resx" />
-    <EmbeddedResource Remove="Resources\Paginator.fr.resx" />
-    <EmbeddedResource Remove="Resources\Paginator.de.resx" />
-    <EmbeddedResource Remove="Resources\Paginator.ja.resx" />
-  </ItemGroup>
-
 </Project>
