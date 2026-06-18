@@ -29,6 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Localization.Abstractions" />
+    <Reference Include="Microsoft.Extensions.Localization" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.AspNetCore.Components.QuickGrid.Tests" />
   </ItemGroup>
 

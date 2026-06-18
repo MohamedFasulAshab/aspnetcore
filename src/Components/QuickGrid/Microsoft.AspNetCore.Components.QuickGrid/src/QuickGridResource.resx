@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+
+  <!-- Paginator strings (neutral/default) -->
+  <data name="Paginator_ItemsSummary" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="Paginator_Page" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="Paginator_Of" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="Paginator_GoToFirstPage" xml:space="preserve">
+    <value>Go to first page</value>
+  </data>
+  <data name="Paginator_GoToPreviousPage" xml:space="preserve">
+    <value>Go to previous page</value>
+  </data>
+  <data name="Paginator_GoToNextPage" xml:space="preserve">
+    <value>Go to next page</value>
+  </data>
+  <data name="Paginator_GoToLastPage" xml:space="preserve">
+    <value>Go to last page</value>
+  </data>
+</root>

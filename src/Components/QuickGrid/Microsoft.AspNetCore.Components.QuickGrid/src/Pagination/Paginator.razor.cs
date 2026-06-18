@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Globalization;
 using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 using Microsoft.AspNetCore.Components.Routing;
 
@@ -15,6 +16,32 @@ public partial class Paginator : IDisposable
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject]
+    private Microsoft.Extensions.Localization.IStringLocalizerFactory LocalizerFactory { get; set; } = default!;
+
+    private Microsoft.Extensions.Localization.IStringLocalizer? Localizer;
+
+    private string L(string key, params object[] args)
+    {
+        if (Localizer is not null)
+        {
+            var localized = Localizer[key, args];
+            return localized.ResourceNotFound ? (args.Length > 0 ? string.Format(CultureInfo.CurrentCulture, localized.Value, args) : localized.Value) : localized.Value;
+        }
+
+        // Fallback English defaults for keys used in Paginator
+        return key switch
+        {
+            "Paginator_ItemsSummary" => args.Length > 0 ? string.Format(CultureInfo.CurrentCulture, "{0} items", args) : "items",
+            "Paginator_Page" => "Page",
+            "Paginator_Of" => "of",
+            "Paginator_GoToFirstPage" => "Go to first page",
+            "Paginator_GoToPreviousPage" => "Go to previous page",
+            "Paginator_GoToNextPage" => "Go to next page",
+            "Paginator_GoToLastPage" => "Go to last page",
+            _ => args.Length > 0 ? string.Format(CultureInfo.CurrentCulture, string.Join(' ', args)) : key,
+        };
+    }
     private string QueryName => State.QueryName;
 
     /// <summary>
@@ -61,6 +88,18 @@ public partial class Paginator : IDisposable
     /// <inheritdoc />
     protected override void OnInitialized()
     {
+        // Initialize localizer for QuickGrid using the generated resource base name.
+        // The neutral .resx creates a generated resource type; use the factory to create a localizer.
+        try
+        {
+            Localizer = LocalizerFactory.Create(typeof(QuickGridResource));
+        }
+        catch
+        {
+            // If localization is not configured or resource not found, leave Localizer null and components will still render.
+            Localizer = null;
+        }
+
         NavigationManager.LocationChanged += OnLocationChanged;
     }
 
