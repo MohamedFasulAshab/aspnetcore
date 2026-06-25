@@ -1,46 +1,59 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Extensions.Localization;
+using System.Globalization;
+using System.Resources;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
+/// <summary>
+/// Internal localization entry point for QuickGrid pagination.
+/// </summary>
 internal sealed class InternalQuickGridLocalizer
 {
+    private readonly ResourceManager _resourceManager;
     private readonly QuickGridLocalizer? _quickGridLocalizer;
-    private readonly IStringLocalizer _defaultLocalizer;
 
     public InternalQuickGridLocalizer(
-        IStringLocalizerFactory localizerFactory,
+        ResourceManager resourceManager,
         QuickGridLocalizer? quickGridLocalizer = null)
     {
-        _quickGridLocalizer = quickGridLocalizer;
+        ArgumentNullException.ThrowIfNull(resourceManager);
 
-        _defaultLocalizer = localizerFactory.Create(
-            "Microsoft.AspNetCore.Components.QuickGrid.Resources.QuickGridLocalization",
-            typeof(InternalQuickGridLocalizer).Assembly.GetName().Name!);
+        _resourceManager = resourceManager;
+        _quickGridLocalizer = quickGridLocalizer;
     }
 
-    public LocalizedString this[string key] => Get(key);
+    public string this[string key] => GetString(key);
 
-    public LocalizedString this[string key, params object[] arguments] => Get(key, arguments);
+    public string this[string key, params object[] arguments] => GetString(key, arguments);
 
-    private LocalizedString Get(string key, params object[] arguments)
+    private string GetString(string key, params object[] arguments)
     {
         if (_quickGridLocalizer is not null)
         {
-            var customValue = arguments is { Length: > 0 }
+            var customValue = arguments.Length > 0
                 ? _quickGridLocalizer[key, arguments]
                 : _quickGridLocalizer[key];
 
-            if (!customValue.ResourceNotFound)
+            if (!customValue.ResourceNotFound && !string.IsNullOrEmpty(customValue.Value))
             {
-                return customValue;
+                return customValue.Value;
             }
         }
 
-        return arguments is { Length: > 0 }
-            ? _defaultLocalizer[key, arguments]
-            : _defaultLocalizer[key];
+        var defaultValue = _resourceManager.GetString(key, CultureInfo.CurrentUICulture);
+
+        if (string.IsNullOrEmpty(defaultValue))
+        {
+            return key;
+        }
+
+        if (arguments.Length == 0)
+        {
+            return defaultValue;
+        }
+
+        return string.Format(CultureInfo.CurrentCulture, defaultValue, arguments);
     }
 }

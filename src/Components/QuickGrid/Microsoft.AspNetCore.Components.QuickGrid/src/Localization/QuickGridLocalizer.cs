@@ -1,7 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Globalization;
 using Microsoft.Extensions.Localization;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
@@ -11,38 +10,39 @@ namespace Microsoft.AspNetCore.Components.QuickGrid;
 /// </summary>
 public class QuickGridLocalizer
 {
+    /// <summary>
+    /// Gets the localized string for the specified key.
+    /// </summary>
+    /// <param name="key">The localization key.</param>
+    /// <returns>The localized string.</returns>
+    public virtual LocalizedString this[string key] => new(key, key, resourceNotFound: true);
 
-/// <summary>
-/// Gets the localized string for the specified key.
-/// </summary>
-/// <param name="key">The localization key.</param>
-/// <returns>
-/// A <see cref="Microsoft.Extensions.Localization.LocalizedString"/> for the requested key.
-/// </returns>
-public virtual LocalizedString this[string key] => new(key, key, resourceNotFound: true);
-
-/// <summary>
-/// Gets the localized string for the specified key and formats it with the supplied arguments.
-/// </summary>
-/// <param name="key">The localization key.</param>
-/// <param name="arguments">Arguments used to format the localized string.</param>
-/// <returns>
-/// A <see cref="Microsoft.Extensions.Localization.LocalizedString"/> for the requested key.
-/// </returns>
-public virtual LocalizedString this[string key, params object[] arguments]
-{
-    get
+    /// <summary>
+    /// Gets the localized string for the specified key and formats it with the supplied arguments.
+    /// </summary>
+    /// <param name="key">The localization key.</param>
+    /// <param name="arguments">Arguments used to format the localized string.</param>
+    /// <returns>The localized and formatted string.</returns>
+    public virtual LocalizedString this[string key, params object[] arguments]
     {
-        var localizedString = this[key];
-
-        if (arguments is null || arguments.Length == 0)
+        get
         {
-            return localizedString;
+            var localizedString = this[key];
+
+            if (arguments.Length == 0)
+            {
+                return localizedString;
+            }
+
+            var formattedValue = string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                localizedString.Value,
+                arguments);
+
+            return new LocalizedString(
+                localizedString.Name,
+                formattedValue,
+                localizedString.ResourceNotFound);
         }
-
-        var formattedValue = string.Format(CultureInfo.CurrentCulture, localizedString.Value, arguments);
-        return new LocalizedString(localizedString.Name, formattedValue, localizedString.ResourceNotFound);
     }
-}
-
 }

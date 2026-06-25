@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 using Microsoft.AspNetCore.Components.Routing;
+using System.Resources;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
@@ -15,7 +16,26 @@ public partial class Paginator : IDisposable
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private IServiceProvider Services { get; set; } = default!;
+
     private string QueryName => State.QueryName;
+
+    private InternalQuickGridLocalizer? _localizer;
+
+    private InternalQuickGridLocalizer Localizer => _localizer ??= CreateLocalizer();
+
+    private InternalQuickGridLocalizer CreateLocalizer()
+    {
+        var customLocalizer = Services.GetService(typeof(QuickGridLocalizer)) as QuickGridLocalizer;
+
+        var resourceManager = new ResourceManager(
+            "Microsoft.AspNetCore.Components.QuickGrid.Resources.QuickGridLocalization",
+            typeof(Paginator).Assembly);
+
+        return new InternalQuickGridLocalizer(resourceManager, customLocalizer);
+    }
 
     /// <summary>
     /// Specifies the associated <see cref="PaginationState"/>. This parameter is required.
