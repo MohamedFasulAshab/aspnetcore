@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Components.Web
 @namespace Microsoft.AspNetCore.Components.QuickGrid
+@inject InternalQuickGridLocalizer L
 
 <div class="paginator">
     @if (State.TotalItemCount.HasValue)
@@ -11,31 +12,75 @@
             }
             else
             {
-                <text><strong>@State.TotalItemCount</strong> items</text>
+                <text><strong>@State.TotalItemCount</strong> @L["Items"]</text>
             }
         </div>
         <nav role="navigation">
             @if (QuickGridFeatureFlags.EnableUrlBasedQuickGridNavigationAndSorting)
             {
-                <a class="go-first" href="@(CanGoBack ? GetPageUrl(0) : null)" title="Go to first page" aria-label="Go to first page" aria-disabled="@(!CanGoBack ? "true" : "false")">«</a>
-                <a class="go-previous" href="@(CanGoBack ? GetPageUrl(State.CurrentPageIndex - 1) : null)" title="Go to previous page" aria-label="Go to previous page" aria-disabled="@(!CanGoBack ? "true" : "false")">‹</a>
+                <a class="go-first"
+                   href="@(CanGoBack ? GetPageUrl(0) : null)"
+                   title="@L["GoToFirstPage"]"
+                   aria-label="@L["GoToFirstPage"]"
+                   aria-disabled="@(!CanGoBack ? "true" : "false")">«</a>
+
+                <a class="go-previous"
+                   href="@(CanGoBack ? GetPageUrl(State.CurrentPageIndex - 1) : null)"
+                   title="@L["GoToPreviousPage"]"
+                   aria-label="@L["GoToPreviousPage"]"
+                   aria-disabled="@(!CanGoBack ? "true" : "false")">‹</a>
+
                 <div class="pagination-text">
-                    Page <strong>@(State.CurrentPageIndex + 1)</strong>
-                    of <strong>@(State.LastPageIndex + 1)</strong>
+                    @L["Page"] <strong>@(State.CurrentPageIndex + 1)</strong>
+                    @L["Of"] <strong>@(State.LastPageIndex + 1)</strong>
                 </div>
-                <a class="go-next" href="@(CanGoForwards ? GetPageUrl(State.CurrentPageIndex + 1) : null)" title="Go to next page" aria-label="Go to next page" aria-disabled="@(!CanGoForwards ? "true" : "false")">›</a>
-                <a class="go-last" href="@(CanGoForwards ? GetPageUrl(State.LastPageIndex.GetValueOrDefault(0)) : null)" title="Go to last page" aria-label="Go to last page" aria-disabled="@(!CanGoForwards ? "true" : "false")">»</a>
+
+                <a class="go-next"
+                   href="@(CanGoForwards ? GetPageUrl(State.CurrentPageIndex + 1) : null)"
+                   title="@L["GoToNextPage"]"
+                   aria-label="@L["GoToNextPage"]"
+                   aria-disabled="@(!CanGoForwards ? "true" : "false")">›</a>
+
+                <a class="go-last"
+                   href="@(CanGoForwards ? GetPageUrl(State.LastPageIndex.GetValueOrDefault(0)) : null)"
+                   title="@L["GoToLastPage"]"
+                   aria-label="@L["GoToLastPage"]"
+                   aria-disabled="@(!CanGoForwards ? "true" : "false")">»</a>
             }
             else
             {
-                <button class="go-first" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page"></button>
-                <button class="go-previous" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"></button>
+                <button class="go-first"
+                        type="button"
+                        @onclick="GoFirstAsync"
+                        disabled="@(!CanGoBack)"
+                        title="@L["GoToFirstPage"]"
+                        aria-label="@L["GoToFirstPage"]"></button>
+
+                <button class="go-previous"
+                        type="button"
+                        @onclick="GoPreviousAsync"
+                        disabled="@(!CanGoBack)"
+                        title="@L["GoToPreviousPage"]"
+                        aria-label="@L["GoToPreviousPage"]"></button>
+
                 <div class="pagination-text">
-                    Page <strong>@(State.CurrentPageIndex + 1)</strong>
-                    of <strong>@(State.LastPageIndex + 1)</strong>
+                    @L["Page"] <strong>@(State.CurrentPageIndex + 1)</strong>
+                    @L["Of"] <strong>@(State.LastPageIndex + 1)</strong>
                 </div>
-                <button class="go-next" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page"></button>
-                <button class="go-last" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-label="Go to last page"></button>
+
+                <button class="go-next"
+                        type="button"
+                        @onclick="GoNextAsync"
+                        disabled="@(!CanGoForwards)"
+                        title="@L["GoToNextPage"]"
+                        aria-label="@L["GoToNextPage"]"></button>
+
+                <button class="go-last"
+                        type="button"
+                        @onclick="GoLastAsync"
+                        disabled="@(!CanGoForwards)"
+                        title="@L["GoToLastPage"]"
+                        aria-label="@L["GoToLastPage"]"></button>
             }
         </nav>
     }
