@@ -64,14 +64,6 @@
     <value>items</value>
   </data>
 
-  <data name="Page" xml:space="preserve">
-    <value>Page</value>
-  </data>
-
-  <data name="Of" xml:space="preserve">
-    <value>of</value>
-  </data>
-
   <data name="GoToFirstPage" xml:space="preserve">
     <value>Go to first page</value>
   </data>
@@ -88,7 +80,7 @@
     <value>Go to last page</value>
   </data>
 
-  <data name="PageStatus" xml:space="preserve">
+  <data name="PaginationPageStatus" xml:space="preserve">
     <value>Page {0} of {1}</value>
   </data>
 </root>

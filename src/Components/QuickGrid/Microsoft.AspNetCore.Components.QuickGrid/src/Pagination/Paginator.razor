@@ -30,8 +30,7 @@
                    aria-disabled="@(!CanGoBack ? "true" : "false")">‹</a>
 
                 <div class="pagination-text">
-                     @Localizer["Page"] <strong>@(State.CurrentPageIndex + 1)</strong>
-                     @Localizer["Of"] <strong>@(State.LastPageIndex + 1)</strong>
+                     @PaginationPageStatus
                 </div>
 
                 <a class="go-next"
@@ -63,8 +62,7 @@
                         aria-label=" @Localizer["GoToPreviousPage"]"></button>
 
                 <div class="pagination-text">
-                     @Localizer["Page"] <strong>@(State.CurrentPageIndex + 1)</strong>
-                     @Localizer["Of"] <strong>@(State.LastPageIndex + 1)</strong>
+                    @PaginationPageStatus
                 </div>
 
                 <button class="go-next"

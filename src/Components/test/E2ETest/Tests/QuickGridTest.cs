@@ -214,4 +214,34 @@ public class QuickGridTest : ServerTestBase<ToggleExecutionModeServerFixture<Pro
             return row ? getComputedStyle(row).cursor : null;");
         Assert.Equal("pointer", cursorStyle);
     }
+
+    [Fact]
+    public void PaginatorDisplaysLocalizedPageStatusWithoutChangingExistingUi()
+    {
+        var paginator = app.FindElement(By.ClassName("paginator"));
+
+        var paginationText = paginator.FindElement(By.CssSelector(".pagination-text"));
+        var strongElements = paginationText.FindElements(By.TagName("strong"));
+
+        Assert.Equal("Page 1 of 10", paginationText.Text.Trim());
+        Assert.Equal(2, strongElements.Count);
+        Assert.Equal("1", strongElements[0].Text);
+        Assert.Equal("10", strongElements[1].Text);
+    }
+
+    [Fact]
+    public void PaginatorLocalizedPageStatusUpdatesAfterNavigatingToNextPage()
+    {
+        var paginator = app.FindElement(By.ClassName("paginator"));
+
+        paginator.FindElement(By.CssSelector(".go-next")).Click();
+
+        var paginationText = paginator.FindElement(By.CssSelector(".pagination-text"));
+        var strongElements = paginationText.FindElements(By.TagName("strong"));
+
+        Assert.Equal("Page 2 of 10", paginationText.Text.Trim());
+        Assert.Equal(2, strongElements.Count);
+        Assert.Equal("2", strongElements[0].Text);
+        Assert.Equal("10", strongElements[1].Text);
+    }
 }

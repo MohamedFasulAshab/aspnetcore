@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
+using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
 using System.Resources;
 
@@ -35,6 +36,82 @@ public partial class Paginator : IDisposable
             typeof(Paginator).Assembly);
 
         return new InternalQuickGridLocalizer(resourceManager, customLocalizer);
+    }
+
+    private RenderFragment PaginationPageStatus => builder =>
+    {
+        var sequence = 0;
+        var template = Localizer["PaginationPageStatus"];
+
+        var currentPage = State.CurrentPageIndex + 1;
+        var lastPage = State.LastPageIndex.GetValueOrDefault(0) + 1;
+
+        WritePaginationPageStatus(builder, ref sequence, template, currentPage, lastPage);
+    };
+
+    private static void WritePaginationPageStatus(
+        RenderTreeBuilder builder,
+        ref int sequence,
+        string template,
+        int currentPage,
+        int lastPage)
+    {
+        var index = 0;
+
+        while (index < template.Length)
+        {
+            var currentPagePlaceholderIndex = template.IndexOf("{0}", index, StringComparison.Ordinal);
+            var lastPagePlaceholderIndex = template.IndexOf("{1}", index, StringComparison.Ordinal);
+
+            if (currentPagePlaceholderIndex == -1 && lastPagePlaceholderIndex == -1)
+            {
+                builder.AddContent(sequence++, template[index..]);
+                return;
+            }
+
+            var nextPlaceholderIndex = GetNextPlaceholderIndex(
+                currentPagePlaceholderIndex,
+                lastPagePlaceholderIndex);
+
+            if (nextPlaceholderIndex > index)
+            {
+                builder.AddContent(sequence++, template[index..nextPlaceholderIndex]);
+            }
+
+            if (nextPlaceholderIndex == currentPagePlaceholderIndex)
+            {
+                builder.OpenElement(sequence++, "strong");
+                builder.AddContent(sequence++, currentPage);
+                builder.CloseElement();
+
+                index = currentPagePlaceholderIndex + 3;
+            }
+            else
+            {
+                builder.OpenElement(sequence++, "strong");
+                builder.AddContent(sequence++, lastPage);
+                builder.CloseElement();
+
+                index = lastPagePlaceholderIndex + 3;
+            }
+        }
+    }
+
+    private static int GetNextPlaceholderIndex(
+        int currentPagePlaceholderIndex,
+        int lastPagePlaceholderIndex)
+    {
+        if (currentPagePlaceholderIndex == -1)
+        {
+            return lastPagePlaceholderIndex;
+        }
+
+        if (lastPagePlaceholderIndex == -1)
+        {
+            return currentPagePlaceholderIndex;
+        }
+
+        return Math.Min(currentPagePlaceholderIndex, lastPagePlaceholderIndex);
     }
 
     /// <summary>
