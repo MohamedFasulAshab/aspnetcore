@@ -36,7 +36,7 @@ internal sealed class InternalQuickGridLocalizer
                 ? _quickGridLocalizer[key, arguments]
                 : _quickGridLocalizer[key];
 
-            if (!customValue.ResourceNotFound && !string.IsNullOrEmpty(customValue.Value))
+            if (!customValue.ResourceNotFound && !string.IsNullOrWhiteSpace(customValue.Value))
             {
                 return customValue.Value;
             }
@@ -44,7 +44,7 @@ internal sealed class InternalQuickGridLocalizer
 
         var defaultValue = _resourceManager.GetString(key, CultureInfo.CurrentUICulture);
 
-        if (string.IsNullOrEmpty(defaultValue))
+        if (string.IsNullOrWhiteSpace(defaultValue))
         {
             return key;
         }

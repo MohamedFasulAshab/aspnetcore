@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Components.Web
 @namespace Microsoft.AspNetCore.Components.QuickGrid
 
 <div class="paginator">
@@ -11,7 +11,7 @@
             }
             else
             {
-                <text><strong>@State.TotalItemCount</strong>  @Localizer["Items"]</text>
+                <text><strong>@State.TotalItemCount</strong> @Localizer["Items"]</text>
             }
         </div>
         <nav role="navigation">
@@ -19,14 +19,14 @@
             {
                 <a class="go-first"
                    href="@(CanGoBack ? GetPageUrl(0) : null)"
-                   title=" @Localizer["GoToFirstPage"]"
-                   aria-label=" @Localizer["GoToFirstPage"]"
+                   title="@Localizer["GoToFirstPage"]"
+                   aria-label="@Localizer["GoToFirstPage"]"
                    aria-disabled="@(!CanGoBack ? "true" : "false")">«</a>
 
                 <a class="go-previous"
                    href="@(CanGoBack ? GetPageUrl(State.CurrentPageIndex - 1) : null)"
-                   title=" @Localizer["GoToPreviousPage"]"
-                   aria-label=" @Localizer["GoToPreviousPage"]"
+                   title="@Localizer["GoToPreviousPage"]"
+                   aria-label="@Localizer["GoToPreviousPage"]"
                    aria-disabled="@(!CanGoBack ? "true" : "false")">‹</a>
 
                 <div class="pagination-text">
@@ -35,14 +35,14 @@
 
                 <a class="go-next"
                    href="@(CanGoForwards ? GetPageUrl(State.CurrentPageIndex + 1) : null)"
-                   title=" @Localizer["GoToNextPage"]"
-                   aria-label=" @Localizer["GoToNextPage"]"
+                   title="@Localizer["GoToNextPage"]"
+                   aria-label="@Localizer["GoToNextPage"]"
                    aria-disabled="@(!CanGoForwards ? "true" : "false")">›</a>
 
                 <a class="go-last"
                    href="@(CanGoForwards ? GetPageUrl(State.LastPageIndex.GetValueOrDefault(0)) : null)"
-                   title=" @Localizer["GoToLastPage"]"
-                   aria-label=" @Localizer["GoToLastPage"]"
+                   title="@Localizer["GoToLastPage"]"
+                   aria-label="@Localizer["GoToLastPage"]"
                    aria-disabled="@(!CanGoForwards ? "true" : "false")">»</a>
             }
             else
@@ -52,14 +52,14 @@
                         @onclick="GoFirstAsync"
                         disabled="@(!CanGoBack)"
                         title=" @Localizer["GoToFirstPage"]"
-                        aria-label=" @Localizer["GoToFirstPage"]"></button>
+                        aria-label="@Localizer["GoToFirstPage"]"></button>
 
                 <button class="go-previous"
                         type="button"
                         @onclick="GoPreviousAsync"
                         disabled="@(!CanGoBack)"
                         title=" @Localizer["GoToPreviousPage"]"
-                        aria-label=" @Localizer["GoToPreviousPage"]"></button>
+                        aria-label="@Localizer["GoToPreviousPage"]"></button>
 
                 <div class="pagination-text">
                     @PaginationPageStatus
@@ -69,15 +69,15 @@
                         type="button"
                         @onclick="GoNextAsync"
                         disabled="@(!CanGoForwards)"
-                        title=" @Localizer["GoToNextPage"]"
-                        aria-label=" @Localizer["GoToNextPage"]"></button>
+                        title="@Localizer["GoToNextPage"]"
+                        aria-label="@Localizer["GoToNextPage"]"></button>
 
                 <button class="go-last"
                         type="button"
                         @onclick="GoLastAsync"
                         disabled="@(!CanGoForwards)"
-                        title=" @Localizer["GoToLastPage"]"
-                        aria-label=" @Localizer["GoToLastPage"]"></button>
+                        title="@Localizer["GoToLastPage"]"
+                        aria-label="@Localizer["GoToLastPage"]"></button>
             }
         </nav>
     }
