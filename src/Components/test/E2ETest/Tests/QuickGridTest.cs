@@ -233,25 +233,110 @@ public class QuickGridTest : ServerTestBase<ToggleExecutionModeServerFixture<Pro
     public void PaginatorLocalizedPageStatusUpdatesAfterNavigatingToNextPage()
     {
         // Click next page
-        app.FindElement(By.CssSelector(".paginator .go-next")).Click();
+        Browser.FindElement(By.CssSelector(".paginator .go-next")).Click();
 
-        WaitAssert.Equal(
-            Browser,
-            "Page 2 of 5",
-            () =>
+        // After clicking, the paginator may trigger a real Blazor navigation
+        // (URL-based mode is the default). This re-mounts the test component,
+        // so any IWebElement captured before the click becomes stale. We must
+        // re-query from the document root on every poll and tolerate
+        // StaleElementReferenceException to allow WaitAssertCore to retry.
+        var paginationText = Browser.Exists<IWebElement>(() =>
+        {
+            try
             {
-                var el = app.FindElement(By.CssSelector(".paginator .pagination-text"));
-                return NormalizeWhiteSpace(el.Text);
+                var el = Browser.FindElement(By.CssSelector(".paginator .pagination-text"));
+                var text = NormalizeWhiteSpace(el.Text);
+                if (text != "Page 2 of 5")
+                {
+                    return null;
+                }
+
+                var strongElements = el.FindElements(By.TagName("strong"));
+                if (strongElements.Count != 2)
+                {
+                    return null;
+                }
+
+                if (strongElements[0].Text.Trim() != "2" || strongElements[1].Text.Trim() != "5")
+                {
+                    return null;
+                }
+
+                return el;
             }
-        );
+            catch (StaleElementReferenceException)
+            {
+                return null;
+            }
+        }, WaitAssert.DefaultTimeout);
 
-        var paginationText = app.FindElement(By.CssSelector(".paginator .pagination-text"));
-
+        // Final assertions on the verified element
         var strongElements = paginationText.FindElements(By.TagName("strong"));
-
         Assert.Equal(2, strongElements.Count);
         Assert.Equal("2", strongElements[0].Text.Trim());
         Assert.Equal("5", strongElements[1].Text.Trim());
+    }
+
+    [Fact]
+    public void PaginatorDisplaysLocalizedPageStatusInFrench()
+    {
+        // Re-navigate to the test app with ?culture=fr-FR. The BasicTestApp
+        // host reads this query string in Program.ConfigureCulture and sets
+        // CurrentUICulture to fr-FR for the Blazor WASM host process. This
+        // makes the Paginator's ResourceManager pick up the
+        // QuickGridLocalization.fr.resx embedded resources.
+        Browser.Navigate().GoToUrl(_serverFixture.RootUri + "?culture=fr-FR");
+
+        // Re-mount the test component under the new culture.
+        app = Browser.MountTestComponent<SampleQuickGridComponent>();
+
+        // Verify the paginator text and <strong> values render in French.
+        var paginator = app.FindElement(By.ClassName("paginator"));
+        var paginationText = paginator.FindElement(By.CssSelector(".pagination-text"));
+        var strongElements = paginationText.FindElements(By.TagName("strong"));
+
+        Assert.Equal("Page 1 sur 5", NormalizeWhiteSpace(paginationText.Text));
+        Assert.Equal(2, strongElements.Count);
+        Assert.Equal("1", strongElements[0].Text);
+        Assert.Equal("5", strongElements[1].Text);
+
+        // Click next and verify the localized text updates.
+        Browser.FindElement(By.CssSelector(".paginator .go-next")).Click();
+
+        var nextPaginationText = Browser.Exists<IWebElement>(() =>
+        {
+            try
+            {
+                var el = Browser.FindElement(By.CssSelector(".paginator .pagination-text"));
+                var text = NormalizeWhiteSpace(el.Text);
+                if (text != "Page 2 sur 5")
+                {
+                    return null;
+                }
+
+                var nextStrongElements = el.FindElements(By.TagName("strong"));
+                if (nextStrongElements.Count != 2)
+                {
+                    return null;
+                }
+
+                if (nextStrongElements[0].Text.Trim() != "2" || nextStrongElements[1].Text.Trim() != "5")
+                {
+                    return null;
+                }
+
+                return el;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return null;
+            }
+        }, WaitAssert.DefaultTimeout);
+
+        var nextStrongElements = nextPaginationText.FindElements(By.TagName("strong"));
+        Assert.Equal(2, nextStrongElements.Count);
+        Assert.Equal("2", nextStrongElements[0].Text.Trim());
+        Assert.Equal("5", nextStrongElements[1].Text.Trim());
     }
 
     private static string NormalizeWhiteSpace(string value)
