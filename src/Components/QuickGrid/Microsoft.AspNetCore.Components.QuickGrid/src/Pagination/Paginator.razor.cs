@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
-using System.Resources
+using System.Resources;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
