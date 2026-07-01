@@ -54,6 +54,15 @@ internal sealed class InternalQuickGridLocalizer
             return defaultValue;
         }
 
-        return string.Format(CultureInfo.CurrentCulture, defaultValue, arguments);
+        // Malformed .resx templates (e.g. missing {0}/{1} placeholders) would
+        // otherwise throw a FormatException and tear down the renderer.
+        try
+        {
+            return string.Format(CultureInfo.CurrentCulture, defaultValue, arguments);
+        }
+        catch (FormatException)
+        {
+            return defaultValue;
+        }
     }
 }

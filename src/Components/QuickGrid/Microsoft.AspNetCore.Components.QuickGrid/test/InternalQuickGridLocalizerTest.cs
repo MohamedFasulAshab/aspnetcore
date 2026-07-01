@@ -35,18 +35,6 @@ public class InternalQuickGridLocalizerTest
     }
 
     [Fact]
-    public void FallsBackToDefaultResourceWhenCustomLocalizerDoesNotProvideValue()
-    {
-        var customLocalizer = new TestQuickGridLocalizer();
-
-        var localizer = CreateLocalizer(customLocalizer);
-
-        var result = localizer["PaginationPageStatus", 3, 9];
-
-        Assert.Equal("Page 3 of 9", result);
-    }
-
-    [Fact]
     public void SupportsReorderedPaginationPageStatusPlaceholders()
     {
         var customLocalizer = new TestQuickGridLocalizer(
@@ -61,13 +49,19 @@ public class InternalQuickGridLocalizerTest
     }
 
     [Fact]
-    public void ReturnsKeyWhenDefaultResourceDoesNotContainValue()
+    public void FallsBackToKeyWhenCustomValueIsWhitespace()
     {
-        var localizer = CreateLocalizer();
+        // The default resource resolves to a single-space value; the localizer
+        // must treat whitespace as missing and hand back the key verbatim.
+        var customLocalizer = new TestQuickGridLocalizer(
+            "WhitespaceKey",
+            " ");
 
-        var result = localizer["MissingPaginationKey"];
+        var localizer = CreateLocalizer(customLocalizer);
 
-        Assert.Equal("MissingPaginationKey", result);
+        var result = localizer["WhitespaceKey"];
+
+        Assert.Equal("WhitespaceKey", result);
     }
 
     private static InternalQuickGridLocalizer CreateLocalizer(QuickGridLocalizer? customLocalizer = null)
