@@ -148,4 +148,34 @@ public class QuickGridInteractiveCompatTest : ServerTestBase<BasicTestAppServerS
         Assert.Contains("sort=PersonId", Browser.Url);
         Assert.Contains("order=asc", Browser.Url);
     }
+
+    [Fact]
+    public void PaginatorLocalizedPageStatusUpdatesAfterNavigationCompatMode()
+    {
+        Navigate($"{ServerPathBase}/quickgrid-interactive");
+        Browser.Exists(By.CssSelector("#grid > table"));
+
+        var paginationText = Browser.FindElement(By.CssSelector(".first-paginator .pagination-text"));
+        Assert.Equal("Page 1 of 5", NormalizeWhiteSpace(paginationText.Text));
+
+        Browser.Click(By.CssSelector(".first-paginator .go-next"));
+
+        Browser.Equal(
+            true,
+            () =>
+            {
+                var text = NormalizeWhiteSpace(
+                    Browser.FindElement(By.CssSelector(".first-paginator .pagination-text")).Text);
+                return text.Contains("Page 2 of 5");
+            });
+    }
+
+    private static string NormalizeWhiteSpace(string value)
+    {
+        return string.Join(
+            " ",
+            value.Split(
+                new[] { ' ', '\r', '\n', '\t' },
+                System.StringSplitOptions.RemoveEmptyEntries));
+    }
 }
