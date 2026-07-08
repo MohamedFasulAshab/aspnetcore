@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Discovery;
+using Microsoft.AspNetCore.Components.Endpoints.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -164,6 +165,42 @@ public class RazorComponentEndpointFactoryTest
 
         var endpoint = Assert.Single(endpoints);
         Assert.DoesNotContain(endpoint.Metadata, m => m is AuthorizeAttribute);
+    }
+
+    [Fact]
+    public void AddEndpoints_ResponseCacheAttribute_PropagatedToMetadata()
+    {
+        // Issue #49130: [ResponseCache] on a Blazor component should land in endpoint metadata
+        // so the UseResponseCacheHeaders middleware can read it.
+        var endpoints = new List<Endpoint>();
+        var factory = new RazorComponentEndpointFactory();
+        var conventions = new List<Action<EndpointBuilder>>();
+        var finallyConventions = new List<Action<EndpointBuilder>>();
+        var configuredRenderModes = new ConfiguredRenderModesMetadata(Array.Empty<IComponentRenderMode>());
+
+        var attribute = new ResponseCacheAttribute
+        {
+            Duration = 30,
+            Location = ResponseCacheLocation.Client,
+        };
+
+        factory.AddEndpoints(
+            endpoints,
+            typeof(App),
+            new PageComponentInfo(
+                "App",
+                typeof(App),
+                "/",
+                new object[] { attribute }),
+            conventions,
+            finallyConventions,
+            configuredRenderModes);
+
+        var endpoint = Assert.Single(endpoints);
+        var cacheAttribute = Assert.IsType<ResponseCacheAttribute>(
+            endpoint.Metadata.GetMetadata<ResponseCacheAttribute>());
+        Assert.Equal(30, cacheAttribute.Duration);
+        Assert.Equal(ResponseCacheLocation.Client, cacheAttribute.Location);
     }
 
     class TestRenderMode : IComponentRenderMode { }

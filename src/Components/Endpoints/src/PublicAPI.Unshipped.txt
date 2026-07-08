@@ -1,5 +1,40 @@
 #nullable enable
+Microsoft.AspNetCore.Builder.ResponseCacheApplicationBuilderExtensions
 Microsoft.AspNetCore.Components.Endpoints.BasePath
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.CacheProfileName.get -> string?
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.CacheProfileName.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.Duration.get -> int
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.Duration.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.GetEffectiveProfile(Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheOptions! options) -> Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile!
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.Location.get -> Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.Location.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.NoStore.get -> bool
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.NoStore.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.ResponseCacheAttribute() -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.VaryByHeader.get -> string?
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheAttribute.VaryByHeader.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheHeadersMiddleware
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheHeadersMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext! httpContext) -> System.Threading.Tasks.Task!
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheHeadersMiddleware.ResponseCacheHeadersMiddleware(Microsoft.AspNetCore.Http.RequestDelegate! next, Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheOptions!>! options) -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation.Any = 0 -> Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation.Client = 1 -> Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation.None = 2 -> Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheOptions
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheOptions.AddProfile(string! name, Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile! profile) -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheOptions.CacheProfiles.get -> System.Collections.Generic.IDictionary<string!, Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile!>!
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheOptions.ResponseCacheOptions() -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.Duration.get -> int?
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.Duration.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.Location.get -> Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheLocation?
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.Location.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.NoStore.get -> bool?
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.NoStore.set -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.ResponseCacheProfile() -> void
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.VaryByHeader.get -> string?
+Microsoft.AspNetCore.Components.Endpoints.Caching.ResponseCacheProfile.VaryByHeader.set -> void
 Microsoft.AspNetCore.Components.Endpoints.BasePath.BasePath() -> void
 Microsoft.AspNetCore.Components.Endpoints.RazorComponentsServiceOptions.TempDataCookie.get -> Microsoft.AspNetCore.Http.CookieBuilder!
 Microsoft.AspNetCore.Components.Endpoints.RazorComponentsServiceOptions.TempDataCookie.set -> void
@@ -51,3 +86,6 @@ Microsoft.AspNetCore.Components.WebAssemblyBrowserOptions.ApplicationCulture.set
 Microsoft.AspNetCore.Components.WebAssemblyBrowserOptions.EnvironmentName.get -> string?
 Microsoft.AspNetCore.Components.WebAssemblyBrowserOptions.EnvironmentName.set -> void
 Microsoft.AspNetCore.Components.WebAssemblyBrowserOptions.EnvironmentVariables.get -> System.Collections.Generic.IDictionary<string!, string!>!
+static Microsoft.AspNetCore.Builder.ResponseCacheApplicationBuilderExtensions.UseResponseCacheHeaders(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+Microsoft.Extensions.DependencyInjection.ResponseCacheServiceCollectionExtensions
+static Microsoft.Extensions.DependencyInjection.ResponseCacheServiceCollectionExtensions.AddResponseCacheHeaders(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
