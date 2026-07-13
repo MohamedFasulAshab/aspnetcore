@@ -7,6 +7,13 @@
     </Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTrimmable>true</IsTrimmable>
+    <!--
+      We embed Resources\QuickGridLocalization.resx with an explicit LogicalName so that
+      ResourceManager can find it as "Microsoft.AspNetCore.Components.QuickGrid.Resources.QuickGridLocalization".
+      The default SDK rule would otherwise auto-include it with a path-based name, which
+      wouldn't match what the Paginator's s_fallbackResourceManager looks up.
+    -->
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,14 +33,21 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Components.Web" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <Reference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Localization.Abstractions" />
-    <Reference Include="Microsoft.Extensions.Localization" />
+    <!--
+      The Paginator's static ResourceManager expects to load the resource set under the
+      base name "Microsoft.AspNetCore.Components.QuickGrid.Resources.QuickGridLocalization".
+      The LogicalName below controls the manifest name of the embedded resource so the
+      lookup at runtime matches.
+    -->
+    <EmbeddedResource Include="Resources\QuickGridLocalization.resx">
+      <LogicalName>Microsoft.AspNetCore.Components.QuickGrid.Resources.QuickGridLocalization.resources</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
-
-
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.AspNetCore.Components.QuickGrid.Tests" />

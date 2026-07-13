@@ -11,11 +11,30 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddInteractiveServerComponents();
 
+// Register localization. The QuickGrid Paginator will detect IStringLocalizer<Paginator>
+// from the DI container and use these .resx files to localize its UI.
+builder.Services.AddLocalization(options =>
+{
+    options.ResourcesPath = "Resources";
+});
+
 builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+// Request localization reads the Accept-Language header (or the cookie/query set by the user
+// in this sample) and sets CultureInfo.CurrentUICulture accordingly. The Paginator reads that
+// culture when calling IStringLocalizer, which is what selects the right .resx file at runtime.
+var supportedCultures = new[] { "en", "es", "fr" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("en")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");

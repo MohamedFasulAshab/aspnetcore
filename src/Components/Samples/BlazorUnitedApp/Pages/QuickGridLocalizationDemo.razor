@@ -1,0 +1,74 @@
+@page "/quickgrid-localization-demo"
+@using BlazorUnitedApp.Data
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject WeatherForecastService ForecastService
+@inject IJSRuntime JS
+
+<PageTitle>QuickGrid Localization Demo</PageTitle>
+
+<h1>QuickGrid Localization Demo</h1>
+
+<p>
+    This page demonstrates the <strong>IStringLocalizer&lt;Paginator&gt;</strong> integration in QuickGrid.
+    Select a language to see the paginator's UI strings change. The Paginator itself is a
+    QuickGrid component &mdash; the <code>Localize()</code> helper inside it picks up the
+    <code>IStringLocalizer&lt;Paginator&gt;</code> from DI and falls back to embedded English
+    if the key is missing.
+</p>
+
+<!-- Language switcher. In a production app this would also set a culture cookie. -->
+<label for="culture-select">Language:&nbsp;</label>
+<select id="culture-select" @bind="SelectedCulture" @bind:after="ApplyCulture">
+    <option value="en">English</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+</select>
+
+<hr />
+
+@if (forecasts is null)
+{
+    <p><em>Loading forecasts...</em></p>
+}
+else
+{
+    <!--
+        The QuickGrid below uses a real Paginator. Because Program.cs called
+        AddLocalization() and UseRequestLocalization(), an IStringLocalizer<Paginator>
+        is registered in DI. The Paginator pulls the "PaginationPageStatus",
+        "Items", and "GoTo*" keys from Paginator.{culture}.resx automatically.
+    -->
+    <QuickGrid TGridItem="WeatherForecast" Items="@forecasts.AsQueryable()" Pagination="@pagination">
+        <PropertyColumn Property="@(f => f.Date.ToShortDateString())" Title="Date" Sortable="true" />
+        <PropertyColumn Property="@(f => f.TemperatureC)" Title="Temp. (C)" Sortable="true" />
+        <PropertyColumn Property="@(f => f.TemperatureF)" Title="Temp. (F)" Sortable="true" />
+        <PropertyColumn Property="@(f => f.Summary)" Title="Summary" Sortable="true" />
+    </QuickGrid>
+
+    <Paginator State="@pagination" />
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+    private readonly PaginationState pagination = new() { ItemsPerPage = 5 };
+
+    // Bound to the language <select>. Defaults to the request's current UI culture.
+    private string SelectedCulture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+    }
+
+    private async Task ApplyCulture()
+    {
+        // Tell the browser to switch the language and force a reload so the
+        // request comes in with the new Accept-Language header. This is the
+        // simplest possible way to demonstrate the behavior; a real app would
+        // persist a culture cookie instead.
+        await JS.InvokeVoidAsync("eval", $@"
+            document.cookie = '.AspNetCore.Culture=c={SelectedCulture}|uic={SelectedCulture};path=/;max-age=31536000';
+            window.location.reload();
+        ");
+    }
+}
