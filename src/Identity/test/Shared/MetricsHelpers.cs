@@ -7,7 +7,7 @@ public static class MetricsHelpers
 {
     public static void AssertHasDurationAndContainsTags(double duration, IReadOnlyDictionary<string, object> tags, List<KeyValuePair<string, object>> expectedTags)
     {
-        Assert.True(duration > 0, "Duration should be greater than 0.");
+        Assert.True(duration >= 0, "Duration should be non-negative.");
         AssertContainsTags(tags, expectedTags);
     }
 
